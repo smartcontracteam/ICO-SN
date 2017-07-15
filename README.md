@@ -1,29 +1,29 @@
-# ICO-SilentNotary
+# ICO-SilentNotary.
 <p align="center">
 <img src="https://github.com/SilentNotary/ICO-SN/blob/master/logo_SN_png_256%D1%85256.png" width="25%" alt="SilentNotary">
 </p>
 
-### Introduction
-Публикуемые документы это код контрактов необходимых для проведения ICO и демонтрационной работы сервиса. Более подробное описание самого сервиса вы можете посмтореть в WhitePaper.
+### Introduction.
+Published documents are the code of contracts, which are required  to conduct ICO and demontrational work of the service. A more detailed description of the service can be found in WhitePaper.
 
-### How It Works
-Схема работы сервиса довольно проста. С помощью различных интервейсов взаимодействия с пользователем формируется архив, включающий в себя дату, реквизиты документа и сам заверяемый документ (это может быть файл, протокол переписки и т.д.). 
+### How It Works.
+The scheme of the service is quite simple. Using various interfaces to interact with the user, there is created an archive, including the date, the details of the document and the witnessed document itself (it can be a file, a protocol of correspondence, etc.).  
 <p align="center">
 <img src="https://github.com/SilentNotary/ICO-SN/blob/master/Shema_4.png" width="75%" alt="SilentNotary">
 </p>
-Далее рассчитывается хеш данного архива и с помощью смарт-контракта записывается в цепочку блоков Etherium. Сам архив сохраняется в хранилище. Пользователь получает Hash (результат вычисления хеш-функции над архивом пользователя), TxHash (хеш транзакции в blockchain Etherium), и ссылку на документ в своём личном кабинете.
+Next, the hash of this archive is calculated and, through the smart contract, written to the chain of Etherium blocks. The archive itself is saved in the storageThe user receives a Hash (the result of computing the hash function on the user's archive), TxHash (the hash of the transaction in the blockchain Etherium), and a link to the document in his personal account.
 
-### Состав публикуемых документов
+### The content of published documents.
 
 SmartContract | Description
 | ------------ | ------------- |
-| Token | Контракт токена SNTR выполненный по стандарту ____. Общее количество токенов 1x10^12SNTR. В контракте зафиксирована возможность принудительного выкупа токенов у держателей по курсу 1М SNTR=0.2ETH. Во избежании большого количества мелких транзакций обмен SNTR на ETH происходит при досижении заданного объёма ETH (параметр будет установлен после ICO принимая во внимание кол-во держателей)|
-| Crowdsale|Контракт краудсейла, контракт облагает следующей особенностью - курс обмена ETH на SNTR зависит от объема реализованных SNTR задаеться начальный курс обмена 1M SNTR=0.01ETH и конечный курс обмена 1М SNTR=0.2ETH. Общая продолжительнось ICO не более 14 дней.|
-| MultiSign| Контракт управляющий кошельком для сбора ETH, имеет 4 подписи, две подписи членов команды, две подписи экскроу. Средства могут быть использованы при подписании двумя членами команды и одним из экскроу |
-| SilentNotary_demo|Это основной контракт сервиса работающий в демонстрационном режиме, основной контракт сервиса ориентированный на обмен токенов и/или взывмыние платы с пользователей будет разработан и опубликован здесь после ICO|
+| Token | The SNTR token contract made according to the standard ____. Total number of tokens is 1x10^12SNTR. In the contract, there is the possibility of forcing the tokens from the holders at the rate 1М SNTR=0.2ETH. In order to avoid a large number of small transactions, the exchange of SNTRs to ETH occurs when the specified volume of ETH is reached (the parameter will be set after the ICO taking into account the number of holders)|
+| Crowdsale|Crowdsale contract, the contract has the following feature: the exchange rate of ETH to SNTR depends on the volume of realized SNTRs, the initial exchange rate is 1M SNTR = 0.01ETH and the final exchange rate is 1M SNTR = 0.2ETH. The total duration of the ICO is not more than 14 days.|
+| MultiSign| The contract managing wallet to collect ETH, has 4 signatures, two signatures of team members, two signatures of Escrow. The funds can be used during the signing by two team members and one of the Escrows.|
+| SilentNotary_demo|This is the main service contract operating in the demonstration mode. The basic service contract targeting the exchange of tokens and / or charging users will be developed and published here after the ICO|
 
-### Дисклаймер обращение.
-Друзья и коллеги обращаем внимание что опубликованный код находиться на этапе тестирования. Мы надеемся что втом числе и с вашей помощью нам удасться устранить возможно имеющиеся недоработки или баги которые могут возникнуть. В данный момент мы продолжаем тестирование этого кода и помере необходимости будем вность в него изменения и дополнения. Финальныя версия кода должна появиться за 24 часа до ICO. Мы верим что совместными усилиями мы сделаем продукт удовлетворяющий наши общие потребности. 
+### Discalimer request.
+Friends and colleagues, pay an attention to the fact that the published code is at the testing stage. We hope that, including your help, we will be able to eliminate possible defects or bugs that may arise. At this moment, we continue testing this code and, as necessary, will make changes and additions to it. The final version of the code should appear 24 hours before the ICO. We believe that with mutual efforts we will make the product satisfying our common needs. 
 
 
 
