@@ -12,7 +12,18 @@
 <img src="https://github.com/SilentNotary/ICO-SN/blob/master/Shema_4.png" width="75%" alt="SilentNotary">
 </p>
 
+### Состав публикуемых документов
 
 
-### How It Works
+| Exchange | Long | Short | Tested | Note |
+| -------- |:----:|:-----:|:------:| ---- |
+| <a href="https://www.bitfinex.com" target="_blank">Bitfinex</a> | ✓ | ✓ | ✓ |
+
+
+
+
+### Дисклаймер обращение.
+
+
+
 
