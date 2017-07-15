@@ -15,12 +15,12 @@
 ### Состав публикуемых документов
 
 
-| Smartcontract| Description| Short | Tested | Note |
+| Smartcontract| Description                              | Note |
 | -------- |:----:|:-----:|:------:| ---- |
-| <a href="https://www.bitfinex.com" target="_blank">Bitfinex</a> | ✓ | ✓ | ✓ |
-
-
-
+| <a href="https://www.bitfinex.com" target="_blank">Token</a> | ✓ | ✓ | ✓ |
+| <a href="https://www.bitfinex.com" target="_blank">Crowdsale</a> | ✓ | ✓ | ✓ |
+| <a href="https://www.bitfinex.com" target="_blank">MultiSign</a> | ✓ | ✓ | ✓ |
+| <a href="https://www.bitfinex.com" target="_blank">SilentNotary_demo</a> | ✓ | ✓ | ✓ |
 ### Дисклаймер обращение.
 
 
