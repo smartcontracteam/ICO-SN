@@ -21,6 +21,12 @@
 | <a href="https://www.bitfinex.com" target="_blank">Crowdsale</a> | ✓ | ✓ | ✓ |
 | <a href="https://www.bitfinex.com" target="_blank">MultiSign</a> | ✓ | ✓ | ✓ |
 | <a href="https://www.bitfinex.com" target="_blank">SilentNotary_demo</a> | ✓ | ✓ | ✓ |
+
+Parameter | Default Value | Description
+| ------------ | ------------------- | ------------- |
+| DemoMode | true | The demo mode will show the spreads but won't actually trade anything |
+
+
 ### Дисклаймер обращение.
 
 
