@@ -9,7 +9,7 @@
 ### How It Works
 Описание работы
 <p align="center">
-<img src="https://github.com/SilentNotary/ICO-SN/blob/master/Shema_4.png" width="100%" alt="SilentNotary">
+<img src="https://github.com/SilentNotary/ICO-SN/blob/master/Shema_4.png" width="50%" alt="SilentNotary">
 </p>
 
 
