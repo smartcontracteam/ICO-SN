@@ -15,10 +15,9 @@
 ### Состав публикуемых документов
 
 
-| Exchange | Long | Short | Tested | Note |
+| Smartcontract| Description| Short | Tested | Note |
 | -------- |:----:|:-----:|:------:| ---- |
 | <a href="https://www.bitfinex.com" target="_blank">Bitfinex</a> | ✓ | ✓ | ✓ |
-
 
 
 
