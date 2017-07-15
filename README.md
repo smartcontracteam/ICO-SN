@@ -15,19 +15,12 @@
 ### Состав публикуемых документов
 
 
-| Smartcontract| Description                              | Note |
-| -------- |:----:|:-----:|:------:| ---- |
-| <a href="https://www.bitfinex.com" target="_blank">Token</a> | ✓ | ✓ | ✓ |
-| <a href="https://www.bitfinex.com" target="_blank">Crowdsale</a> | ✓ | ✓ | ✓ |
-| <a href="https://www.bitfinex.com" target="_blank">MultiSign</a> | ✓ | ✓ | ✓ |
-| <a href="https://www.bitfinex.com" target="_blank">SilentNotary_demo</a> | ✓ | ✓ | ✓ |
-
-Smartcontract | Default Value | Description
-| ------------ | ------------------- | ------------- |
-| Token | link | The demo mode will show the spreads but won't actually trade anything |
-| Crowdsale| link | The demo mode will show the spreads but won't actually trade anything |
-| MultiSign| link| The demo mode will show the spreads but won't actually trade anything |
-| SilentNotary_demo| link | The demo mode will show the spreads but won't actually trade anything |
+Smartcontract | Description
+| ------------ | ------------- |
+| Token | The demo mode will show the spreads but won't actually trade anything |
+| Crowdsale|The demo mode will show the spreads but won't actually trade anything |
+| MultiSign|he demo mode will show the spreads but won't actually trade anything |
+| SilentNotary_demo|The demo mode will show the spreads but won't actually trade anything |
 
 ### Дисклаймер обращение.
 
