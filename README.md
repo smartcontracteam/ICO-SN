@@ -17,8 +17,8 @@
 
 Smartcontract | Description
 | ------------ | ------------- |
-| Token | The demo mode will show the spreads but won't actually trade anything |
-| Crowdsale|The demo mode will show the spreads but won't actually trade anything |
+| Token | Контракт токена SNTR выполненный по стандарту ____|
+| Crowdsale|Контракт краудсейла, контракт облагает следующей особенностью - курс обмена ETH на SNTR зависит от объема реализованных SNTR|
 | MultiSign|he demo mode will show the spreads but won't actually trade anything |
 | SilentNotary_demo|The demo mode will show the spreads but won't actually trade anything |
 
