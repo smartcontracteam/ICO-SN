@@ -25,7 +25,9 @@
 Parameter | Default Value | Description
 | ------------ | ------------------- | ------------- |
 | DemoMode | true | The demo mode will show the spreads but won't actually trade anything |
-
+| DemoMode | true | The demo mode will show the spreads but won't actually trade anything |
+| DemoMode | true | The demo mode will show the spreads but won't actually trade anything |
+| DemoMode | true | The demo mode will show the spreads but won't actually trade anything |
 
 ### Дисклаймер обращение.
 
