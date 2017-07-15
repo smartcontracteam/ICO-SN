@@ -19,7 +19,7 @@ SmartContract | Description
 | ------------ | ------------- |
 | Token | The SNTR token contract made according to the standard ERC20. Total number of tokens is 1x10^12SNTR. In the contract, there is the possibility of forcing the tokens from the holders at the rate 1М SNTR=0.2ETH. In order to avoid a large number of small transactions, the exchange of SNTRs to ETH occurs when the specified volume of ETH is reached (the parameter will be set after the ICO taking into account the number of holders)|
 | Crowdsale|Crowdsale contract, the contract has the following feature: the exchange rate of ETH to SNTR depends on the volume of realized SNTRs, the initial exchange rate is 1M SNTR = 0.01ETH and the final exchange rate is 1M SNTR = 0.2ETH. The total duration of the ICO is not more than 14 days.|
-| MultiSign| The contract managing wallet to collect ETH, has 4 signatures, two signatures of team members, two signatures of Escrow. The funds can be used during the signing by two team members and one of the Escrows.|
+| <a href="https://www.bitfinex.com" target="_blank">MultiSign</a> MultiSign| The contract managing wallet to collect ETH, has 4 signatures, two signatures of team members, two signatures of Escrow. The funds can be used during the signing by two team members and one of the Escrows.|
 | SilentNotary_demo|This is the main service contract operating in the demonstration mode. The basic service contract targeting the exchange of tokens and / or charging users will be developed and published here after the ICO|
 
 ### Discalimer request.
