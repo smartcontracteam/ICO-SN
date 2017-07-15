@@ -4,9 +4,11 @@
 </p>
 
 ### Introduction.
+
 Published documents are the code of contracts, which are required  to conduct ICO and demontrational work of the service. A more detailed description of the service can be found in WhitePaper.
 
 ### How It Works.
+
 The scheme of the service is quite simple. Using various interfaces to interact with the user, there is created an archive, including the date, the details of the document and the witnessed document itself (it can be a file, a protocol of correspondence, etc.).  
 <p align="center">
 <img src="https://github.com/SilentNotary/ICO-SN/blob/master/Shema_4.png" width="75%" alt="SilentNotary">
@@ -22,9 +24,8 @@ SmartContract | Description
 | <a href="https://github.com/SilentNotary/ICO-SN/blob/master/dapp/src/MultiSigWallet.sol" target="_blank">MultiSign</a>| The contract managing wallet to collect ETH, has 4 signatures, two signatures of team members, two signatures of Escrow. The funds can be used during the signing by two team members and one of the Escrows.|
 | <a href="https://github.com/SilentNotary/ICO-SN/blob/master/dapp/src/SilentNotary.sol" target="_blank">SilentNotary_demo</a>|This is the main service contract operating in the demonstration mode. The basic service contract targeting the exchange of tokens and / or charging users will be developed and published here after the ICO|
 
-https://github.com/SilentNotary/ICO-SN/blob/master/dapp/src/SilentNotaryToken.sol
-
 ### Discalimer request.
+
 Friends and colleagues, pay an attention to the fact that the published code is at the testing stage. We hope that, including your help, we will be able to eliminate possible defects or bugs that may arise. At this moment, we continue testing this code and, as necessary, will make changes and additions to it. The final version of the code should appear 24 hours before the ICO. We believe that with mutual efforts we will make the product satisfying our common needs. 
 
 
