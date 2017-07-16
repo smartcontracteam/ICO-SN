@@ -13,7 +13,7 @@ The scheme of the service is quite simple. Using various interfaces to interact 
 <p align="center">
 <img src="https://github.com/SilentNotary/ICO-SN/blob/master/Shema_4.png" width="75%" alt="SilentNotary">
 </p>
-Next, the hash of this archive is calculated and, through the smart contract, written to the chain of Etherium blocks. The archive itself is saved in the storageThe user receives a Hash (the result of computing the hash function on the user's archive), TxHash (the hash of the transaction in the blockchain Etherium), and a link to the document in his personal account.
+Next, the hash of this archive is calculated  by the algorithm <a href="https://en.wikipedia.org/wiki/SHA-2" target="_blank">H-256</a> and, through the smart contract, written to the chain of Etherium blocks. The archive itself is saved in the storageThe user receives a Hash (the result of computing the hash function on the user's archive), TxHash (the hash of the transaction in the blockchain Etherium), and a link to the document in his personal account.
 
 ### The content of published documents.
 
