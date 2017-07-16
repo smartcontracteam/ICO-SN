@@ -5,6 +5,15 @@ import '/src/common/token/ERC20.sol';
 import '/src/common/SafeMath.sol';
 import '/src/TokenHolders.sol';
 
+/*
+This code is in the testing stage and may contain certain bugs. 
+These bugs will be identified and eliminated by the team at the testing stage before the ICO.
+Please treat with understanding. If you become aware of a problem, please let us know by e-mail: service@silentnotary.com.
+If the problem is critical and security related, we will credit you with the reward from the team's share in the tokens 
+at the end of the ICO (as officially announced at bitcointalk.org).
+Thanks for the help.
+*/
+
  /// @title SilentNotaryToken contract - standard ERC20 token with Short Hand Attack and approve() race condition mitigation.
  /// @author dev@smartcontracteam.com
 contract SilentNotaryToken is SafeMath, TokenHolders, ERC20, Killable {
