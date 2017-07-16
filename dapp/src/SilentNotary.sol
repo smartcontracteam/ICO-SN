@@ -3,6 +3,15 @@ pragma solidity ^0.4.11;
 import './common/ownership/Ownable.sol';
 import './common/token/ERC20.sol';
 
+/*
+This code is in the testing stage and may contain certain bugs. 
+These bugs will be identified and eliminated by the team at the testing stage before the ICO.
+Please treat with understanding. If you become aware of a problem, please let us know by e-mail: service@silentnotary.com.
+If the problem is critical and security related, we will credit you with the reward from the team's share in the tokens 
+at the end of the ICO (as officially announced at bitcointalk.org).
+Thanks for the help.
+*/
+
 /// @title SilentNotary contract - store SHA-384 file hash in blockchain
 /// @author dev@smartcontracteam.com
 contract SilentNotary is Ownable {
