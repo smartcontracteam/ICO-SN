@@ -4,6 +4,16 @@ import '/src/common/SafeMath.sol';
 import '/src/common/lifecycle/Haltable.sol';
 import '/src/SilentNotaryToken.sol';
 
+/*
+This code is in the testing stage and may contain certain bugs. 
+These bugs will be identified and eliminated by the team at the testing stage before the ICO.
+Please treat with understanding. If you become aware of a problem, please let us know by e-mail: service@silentnotary.com.
+If the problem is critical and security related, we will credit you with the reward from the team's share in the tokens 
+at the end of the ICO (as officially announced at bitcointalk.org).
+Thanks for the help.
+*/
+
+
  /// @title SilentNotary  сrowdsale contract
  /// @author dev@smartcontracteam.com
 contract SilentNotaryCrowdsale is Haltable, SafeMath {
