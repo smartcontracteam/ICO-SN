@@ -38,60 +38,43 @@ contract MultiSigWallet {
     }
 
     modifier onlyWallet() {
-        if (msg.sender != address(this))
-            throw;
-        _;
+      require(msg.sender == address(this));
     }
 
     modifier ownerDoesNotExist(address owner) {
-        if (isOwner[owner])
-            throw;
-        _;
+      require(!isOwner[owner]);
     }
 
     modifier ownerExists(address owner) {
-        if (!isOwner[owner])
-            throw;
-        _;
+      require(isOwner[owner]);
     }
 
     modifier transactionExists(uint transactionId) {
-        if (transactions[transactionId].destination == 0)
-            throw;
-        _;
+      require(transactions[transactionId].destination != 0);
     }
 
     modifier confirmed(uint transactionId, address owner) {
-        if (!confirmations[transactionId][owner])
-            throw;
-        _;
+      require(confirmations[transactionId][owner]);
     }
 
     modifier notConfirmed(uint transactionId, address owner) {
-        if (confirmations[transactionId][owner])
-            throw;
-        _;
+      require(!confirmations[transactionId][owner]);
     }
 
     modifier notExecuted(uint transactionId) {
-        if (transactions[transactionId].executed)
-            throw;
-        _;
+      require(!transactions[transactionId].executed);
     }
 
     modifier notNull(address _address) {
-        if (_address == 0)
-            throw;
-        _;
+      require(_address != 0);
     }
 
     modifier validRequirement(uint ownerCount, uint _required) {
-        if (   ownerCount > MAX_OWNER_COUNT
-            || _required > ownerCount
-            || _required == 0
-            || ownerCount == 0)
-            throw;
-        _;
+        require(
+          ownerCount <= MAX_OWNER_COUNT &&
+          _required <= ownerCount &&
+          _required != 0 &&
+          ownerCount != 0);
     }
 
     /// @dev Fallback function allows to deposit ether.
