@@ -19,7 +19,7 @@ Thanks for the help.
 contract SilentNotaryToken is SafeMath, TokenHolders, ERC20, Killable {
   string public name = "Silent Notary Token";
   string public symbol = "SNTR";
-  uint public decimals = 8;
+  uint public decimals = 0;
 
   /// Minimum amount for buyout in wei
   uint buyOutAmount;
@@ -36,44 +36,31 @@ contract SilentNotaryToken is SafeMath, TokenHolders, ERC20, Killable {
   /// @dev Limit token transfer until the crowdsale is over.
   modifier canTransfer() {
     if(!released) {
-        if(msg.sender != crowdsaleAgent) {
-            throw;
-        }
+      require(msg.sender == crowdsaleAgent);
     }
-    _;
   }
 
   /// @dev The function can be called only before or after the tokens have been releasesd
   /// @param _released token transfer and mint state
   modifier inReleaseState(bool _released) {
-    if(_released != released) {
-        throw;
-    }
-    _;
+    require(_released == released);
   }
 
   /// @dev The function can be called only by release agent.
   modifier onlyCrowdsaleAgent() {
-    if(msg.sender != crowdsaleAgent) {
-        throw;
-    }
-    _;
+    require(msg.sender == crowdsaleAgent);
   }
 
   /// @dev Fix for the ERC20 short address attack http://vessenes.com/the-erc20-short-address-attack-explained/
   /// @param size payload size
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length < size + 4) {
-       throw;
-     }
-     _;
+    require(msg.data.length >= size + 4);
   }
 
   /// @dev Make sure we are not done yet.
   modifier canMint() {
-     if(released) throw;
-     _;
-   }
+    require(!released);
+  }
 
   /// Tokens burn event
   event Burned(address indexed burner, address indexed holder, uint burnedAmount);
@@ -86,6 +73,9 @@ contract SilentNotaryToken is SafeMath, TokenHolders, ERC20, Killable {
   /// @param _buyOutPrice Buyout price
   /// @param _buyOutAmount  Buyout limit
   function SilentNotaryToken(uint _buyOutPrice, uint _buyOutAmount) {
+    require(_buyOutPrice > 0);
+    require(_buyOutAmount > 0);
+
     owner = msg.sender;
     buyOutPrice = _buyOutPrice;
     buyOutAmount = _buyOutAmount;
@@ -187,9 +177,7 @@ contract SilentNotaryToken is SafeMath, TokenHolders, ERC20, Killable {
 
     uint totalSupplyAmount = totalSupply;
     uint payoutBalance = safeAdd(this.balance, msg.value);
-    if(payoutBalance == 0)
-       return;
-
+    
     if(safeMul(totalSupplyAmount, buyOutPrice) <= payoutBalance)
        buyOutAmount = 0;
 
