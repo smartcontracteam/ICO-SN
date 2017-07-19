@@ -12,7 +12,7 @@ at the end of the ICO (as officially announced at bitcointalk.org).
 Thanks for the help.
 */
 
-/// @title SilentNotary contract - store SHA-384 file hash in blockchain
+/// @title SilentNotary contract - store SHA-256 file hash in blockchain
 /// @author dev@smartcontracteam.com
 contract SilentNotary is Ownable {
 	uint public price;
