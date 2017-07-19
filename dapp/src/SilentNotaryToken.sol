@@ -3,7 +3,6 @@ pragma solidity ^0.4.11;
 import '/src/common/lifecycle/Killable.sol';
 import '/src/common/token/ERC20.sol';
 import '/src/common/SafeMath.sol';
-import '/src/TokenHolders.sol';
 
 /*
 This code is in the testing stage and may contain certain bugs. 
@@ -16,17 +15,20 @@ Thanks for the help.
 
  /// @title SilentNotaryToken contract - standard ERC20 token with Short Hand Attack and approve() race condition mitigation.
  /// @author dev@smartcontracteam.com
-contract SilentNotaryToken is SafeMath, TokenHolders, ERC20, Killable {
-  string public name = "Silent Notary Token";
-  string public symbol = "SNTR";
-  uint public decimals = 0;
+contract SilentNotaryToken is SafeMath, ERC20, Killable {
+  string constant public name = "Silent Notary Token";
+  string constant public symbol = "SNTR";
+  uint constant public decimals = 4;
 
   /// Minimum amount for buyout in wei
   uint buyOutAmount;
   /// Buyout price in wei
   uint buyOutPrice;
-
-  /// contract that is allowed to create new tokens and allows unlift the transfer limits on this token
+  /// Holder list
+  address[] holders;
+  /// Holder balances
+  mapping(address => uint) balances;
+  /// Contract that is allowed to create new tokens and allows unlift the transfer limits on this token
   address public crowdsaleAgent;
   /// A crowdsale contract can release us to the wild if ICO success. If false we are are in transfer lock up period.
   bool public released = false;
@@ -35,31 +37,44 @@ contract SilentNotaryToken is SafeMath, TokenHolders, ERC20, Killable {
 
   /// @dev Limit token transfer until the crowdsale is over.
   modifier canTransfer() {
-    if(!released) {
+    if(!released)
       require(msg.sender == crowdsaleAgent);
-    }
+    _;
   }
 
   /// @dev The function can be called only before or after the tokens have been releasesd
   /// @param _released token transfer and mint state
   modifier inReleaseState(bool _released) {
     require(_released == released);
+    _;
+  }
+
+  /// @dev If holder does not exist add to array
+  /// @param holder Token holder
+  modifier addIfNotExist(address holder) {
+    if(balances[holder] == 0)
+      holders.push(holder);
+    _;
+
   }
 
   /// @dev The function can be called only by release agent.
   modifier onlyCrowdsaleAgent() {
     require(msg.sender == crowdsaleAgent);
+    _;
   }
 
   /// @dev Fix for the ERC20 short address attack http://vessenes.com/the-erc20-short-address-attack-explained/
   /// @param size payload size
   modifier onlyPayloadSize(uint size) {
     require(msg.data.length >= size + 4);
+    _;
   }
 
   /// @dev Make sure we are not done yet.
   modifier canMint() {
     require(!released);
+    _;
   }
 
   /// Tokens burn event
@@ -88,9 +103,9 @@ contract SilentNotaryToken is SafeMath, TokenHolders, ERC20, Killable {
   /// @dev Create new tokens and allocate them to an address. Only callably by a crowdsale contract
   /// @param receiver Address of receiver
   /// @param amount  Number of tokens to issue.
-  function mint(address receiver, uint amount) onlyCrowdsaleAgent canMint public {
+  function mint(address receiver, uint amount) onlyCrowdsaleAgent canMint addIfNotExist(receiver) public {
       totalSupply = safeAdd(totalSupply, amount);
-      addOrUpdate(receiver, safeAdd(balances.data[receiver].value, amount));
+      balances[receiver] = safeAdd(balances[receiver], amount);
       Transfer(0, receiver, amount);
   }
   /// @dev Set minimum limit for buyout
@@ -111,9 +126,10 @@ contract SilentNotaryToken is SafeMath, TokenHolders, ERC20, Killable {
   /// @param _to dest address
   /// @param _value tokens amount
   /// @return transfer result
-  function transfer(address _to, uint _value) onlyPayloadSize(2 * 32) canTransfer returns (bool success) {
-    addOrUpdate(msg.sender, safeSub(balances.data[msg.sender].value, _value));
-    addOrUpdate(_to, safeAdd(balances.data[_to].value, _value));
+  function transfer(address _to, uint _value) onlyPayloadSize(2 * 32) canTransfer addIfNotExist(_to) returns (bool success) {
+    balances[msg.sender] = safeSub(balances[msg.sender], _value);
+    balances[_to] = safeAdd(balances[_to], _value);
+
     Transfer(msg.sender, _to, _value);
     return true;
   }
@@ -123,19 +139,19 @@ contract SilentNotaryToken is SafeMath, TokenHolders, ERC20, Killable {
   /// @param _to dest address
   /// @param _value tokens amount
   /// @return transfer result
-  function transferFrom(address _from, address _to, uint _value) canTransfer returns (bool success) {
-    uint _allowance = allowed[_from][msg.sender];
-    addOrUpdate(_to, safeAdd(balances.data[_to].value, _value));
-    addOrUpdate(_from, safeSub(balances.data[_from].value, _value));
+  function transferFrom(address _from, address _to, uint _value) canTransfer addIfNotExist(_to) returns (bool success) {
+    var _allowance = allowed[_from][msg.sender];
+
+    balances[_to] = safeAdd(balances[_to], _value);
+    balances[_from] = safeSub(balances[_from], _value);
     allowed[_from][msg.sender] = safeSub(_allowance, _value);
     Transfer(_from, _to, _value);
-    return true;
   }
   /// @dev Tokens balance
   /// @param _owner holder address
   /// @return balance amount
   function balanceOf(address _owner) constant returns (uint balance) {
-    return balances.data[_owner].value;
+    return balances[_owner];
   }
 
   /// @dev Approve transfer
@@ -166,7 +182,7 @@ contract SilentNotaryToken is SafeMath, TokenHolders, ERC20, Killable {
   /// @param _holder holder address
   /// @param _amount burn amount
   function burn(address _holder, uint _amount) internal  {
-      balances.data[_holder].value = safeSub(balances.data[_holder].value, _amount);
+      balances[_holder] = safeSub(balances[_holder], _amount);
       totalSupply = safeSub(totalSupply, _amount);
       Burned(msg.sender, _holder, _amount);
   }
@@ -177,30 +193,27 @@ contract SilentNotaryToken is SafeMath, TokenHolders, ERC20, Killable {
 
     uint totalSupplyAmount = totalSupply;
     uint payoutBalance = safeAdd(this.balance, msg.value);
-    
+
     if(safeMul(totalSupplyAmount, buyOutPrice) <= payoutBalance)
        buyOutAmount = 0;
 
     if(payoutBalance < buyOutAmount)
         return;
 
-    for (var i = iterateStart(); iterateValid(i); i = iterateNext(i)) {
-      var current = iterateGet(i);
-      if(balances.data[current.key].value == 0) {
-          continue;
-      }
+    for (var i = 0; i < holders.length; i++) {
+      var holder = holders[i];
 
       uint multiplier = 10 ** decimals;
-      uint holderTokenPortion =  safeDiv(safeMul(balances.data[current.key].value, multiplier), totalSupplyAmount);
+      uint holderTokenPortion =  safeDiv(safeMul(balances[holder], multiplier), totalSupplyAmount);
       uint holderWeiPortion  = safeDiv(safeMul(holderTokenPortion, payoutBalance), multiplier);
 
       if(holderWeiPortion < buyOutPrice)
           continue;
 
       uint holderBuyoutTokens =  safeDiv(holderWeiPortion, buyOutPrice);
-      burn(current.key, holderBuyoutTokens);
-      current.key.transfer(holderWeiPortion);
-      Pay(current.key, holderWeiPortion);
+      burn(holder, holderBuyoutTokens);
+      holder.transfer(holderWeiPortion);
+      Pay(holder, holderWeiPortion);
     }
   }
 }
