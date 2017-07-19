@@ -103,6 +103,7 @@ contract SilentNotaryCrowdsale is Haltable, SafeMath {
   /// Modified allowing execution only if the crowdsale is currently runnin
   modifier inState(State state) {
     require(getState() == state);
+    _;
   }
 
   /// @dev Constructor
