@@ -14,7 +14,7 @@ Thanks for the help.
 */
 
 
- /// @title SilentNotary  сrowdsale contract
+/// @title SilentNotary  сrowdsale contract
  /// @author dev@smartcontracteam.com
 contract SilentNotaryCrowdsale is Haltable, SafeMath {
 
@@ -70,10 +70,10 @@ contract SilentNotaryCrowdsale is Haltable, SafeMath {
   uint public constant MAX_PRICE = 200 finney;
 
   /// How much ICO tokens to sold
-  uint public constant INVESTOR_TOKENS  = 90000;
+  uint public constant INVESTOR_TOKENS  = 9e4;
 
   /// How much ICO tokens will get team
-  uint public constant TEAM_TOKENS = 10000;
+  uint public constant TEAM_TOKENS = 1e4;
 
   int priceCalculatingRatio = -1;
 
@@ -102,8 +102,7 @@ contract SilentNotaryCrowdsale is Haltable, SafeMath {
 
   /// Modified allowing execution only if the crowdsale is currently runnin
   modifier inState(State state) {
-    if(getState() != state) throw;
-    _;
+    require(getState() == state);
   }
 
   /// @dev Constructor
@@ -112,30 +111,17 @@ contract SilentNotaryCrowdsale is Haltable, SafeMath {
   /// @param _start  ICO start time
   /// @param _end  ICO end time
   function Crowdsale(address _token, address _multisigWallet, uint _start, uint _end) {
+    require(_token != 0);
+    require(_multisigWallet != 0);
+    require(_start != 0);
+    require(_end != 0);
+    require(_start < _end);
+
     owner = msg.sender;
     token = SilentNotaryToken(_token);
     multisigWallet = _multisigWallet;
-
-    if(multisigWallet == 0) {
-        throw;
-    }
-
-    if(_start == 0) {
-        throw;
-    }
-
     startsAt = _start;
-
-    if(_end == 0) {
-        throw;
-    }
-
     endsAt = _end;
-
-    // Don't mess the dates
-    if(startsAt >= endsAt) {
-        throw;
-    }
   }
 
   /// @dev Don't expect to just send in money and get tokens.
@@ -146,31 +132,12 @@ contract SilentNotaryCrowdsale is Haltable, SafeMath {
    /// @dev Make an investment.
    /// @param receiver The Ethereum address who receives the tokens
   function investInternal(address receiver) stopInEmergency private {
-    // Determine if it's a good time to accept investment from this participant
-    if(getState() == State.Funding) {
-      // Retail participants can only come in when the crowdsale is running
-      // pass
-    } else {
-      // Unwanted state
-      throw;
-    }
+    require(getState() == State.Funding);
+    require(msg.value >= MIN_INVESTEMENT);
 
     uint weiAmount = msg.value;
-    if(weiAmount < MIN_INVESTEMENT)
-      throw;
-
-    uint tokenAmount;
-    if(tokenPrice == uint(MIN_PRICE)) {
-        tokenAmount = safeDiv(weiAmount, MIN_PRICE);
-    }
-    else {
-      tokenAmount = safeDiv(weiAmount, tokenPrice);
-    }
-
-    if(tokenAmount == 0) {
-      // Dust transaction
-      throw;
-    }
+    uint tokenAmount = safeDiv(weiAmount, tokenPrice);
+    assert(tokenAmount > 0);
 
     var price = calculatePrice(tokenAmount);
     PriceChanged(tokenPrice, price);
