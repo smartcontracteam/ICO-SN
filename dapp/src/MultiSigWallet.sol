@@ -39,34 +39,42 @@ contract MultiSigWallet {
 
     modifier onlyWallet() {
       require(msg.sender == address(this));
+      _;
     }
 
     modifier ownerDoesNotExist(address owner) {
       require(!isOwner[owner]);
+      _;
     }
 
     modifier ownerExists(address owner) {
       require(isOwner[owner]);
+      _;
     }
 
     modifier transactionExists(uint transactionId) {
       require(transactions[transactionId].destination != 0);
+      _;
     }
 
     modifier confirmed(uint transactionId, address owner) {
       require(confirmations[transactionId][owner]);
+      _;
     }
 
     modifier notConfirmed(uint transactionId, address owner) {
       require(!confirmations[transactionId][owner]);
+      _;
     }
 
     modifier notExecuted(uint transactionId) {
       require(!transactions[transactionId].executed);
+      _;
     }
 
     modifier notNull(address _address) {
       require(_address != 0);
+      _;
     }
 
     modifier validRequirement(uint ownerCount, uint _required) {
@@ -75,6 +83,7 @@ contract MultiSigWallet {
           _required <= ownerCount &&
           _required != 0 &&
           ownerCount != 0);
+        _;
     }
 
     /// @dev Fallback function allows to deposit ether.
