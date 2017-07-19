@@ -13,7 +13,7 @@ at the end of the ICO (as officially announced at bitcointalk.org).
 Thanks for the help.
 */
 
- /// @title SilentNotaryToken contract - standard ERC20 token with Short Hand Attack and approve() race condition mitigation.
+/// @title SilentNotaryToken contract - standard ERC20 token with Short Hand Attack and approve() race condition mitigation.
  /// @author dev@smartcontracteam.com
 contract SilentNotaryToken is SafeMath, ERC20, Killable {
   string constant public name = "Silent Notary Token";
@@ -26,8 +26,15 @@ contract SilentNotaryToken is SafeMath, ERC20, Killable {
   uint buyOutPrice;
   /// Holder list
   address[] holders;
+  /// Balance data 
+  struct Balance {
+    /// Tokens amount
+    uint value;
+    /// Object exist
+    bool exist;
+  }
   /// Holder balances
-  mapping(address => uint) balances;
+  mapping(address => Balance) balances;
   /// Contract that is allowed to create new tokens and allows unlift the transfer limits on this token
   address public crowdsaleAgent;
   /// A crowdsale contract can release us to the wild if ICO success. If false we are are in transfer lock up period.
@@ -52,7 +59,7 @@ contract SilentNotaryToken is SafeMath, ERC20, Killable {
   /// @dev If holder does not exist add to array
   /// @param holder Token holder
   modifier addIfNotExist(address holder) {
-    if(balances[holder] == 0)
+    if(!balances[holder].exist)
       holders.push(holder);
     _;
 
@@ -105,7 +112,8 @@ contract SilentNotaryToken is SafeMath, ERC20, Killable {
   /// @param amount  Number of tokens to issue.
   function mint(address receiver, uint amount) onlyCrowdsaleAgent canMint addIfNotExist(receiver) public {
       totalSupply = safeAdd(totalSupply, amount);
-      balances[receiver] = safeAdd(balances[receiver], amount);
+      balances[receiver].value = safeAdd(balances[receiver].value, amount);
+      balances[receiver].exist = true;
       Transfer(0, receiver, amount);
   }
   /// @dev Set minimum limit for buyout
@@ -127,9 +135,9 @@ contract SilentNotaryToken is SafeMath, ERC20, Killable {
   /// @param _value tokens amount
   /// @return transfer result
   function transfer(address _to, uint _value) onlyPayloadSize(2 * 32) canTransfer addIfNotExist(_to) returns (bool success) {
-    balances[msg.sender] = safeSub(balances[msg.sender], _value);
-    balances[_to] = safeAdd(balances[_to], _value);
-
+    balances[msg.sender].value = safeSub(balances[msg.sender].value, _value);
+    balances[_to].value = safeAdd(balances[_to].value, _value);
+    balances[_to].exist = true;
     Transfer(msg.sender, _to, _value);
     return true;
   }
@@ -142,8 +150,10 @@ contract SilentNotaryToken is SafeMath, ERC20, Killable {
   function transferFrom(address _from, address _to, uint _value) canTransfer addIfNotExist(_to) returns (bool success) {
     var _allowance = allowed[_from][msg.sender];
 
-    balances[_to] = safeAdd(balances[_to], _value);
-    balances[_from] = safeSub(balances[_from], _value);
+    balances[_to].value = safeAdd(balances[_to].value, _value);
+    balances[_from].value = safeSub(balances[_from].value, _value);
+    balances[_to].exist = true;
+
     allowed[_from][msg.sender] = safeSub(_allowance, _value);
     Transfer(_from, _to, _value);
   }
@@ -151,7 +161,7 @@ contract SilentNotaryToken is SafeMath, ERC20, Killable {
   /// @param _owner holder address
   /// @return balance amount
   function balanceOf(address _owner) constant returns (uint balance) {
-    return balances[_owner];
+    return balances[_owner].value;
   }
 
   /// @dev Approve transfer
@@ -182,7 +192,7 @@ contract SilentNotaryToken is SafeMath, ERC20, Killable {
   /// @param _holder holder address
   /// @param _amount burn amount
   function burn(address _holder, uint _amount) internal  {
-      balances[_holder] = safeSub(balances[_holder], _amount);
+      balances[_holder].value = safeSub(balances[_holder].value, _amount);
       totalSupply = safeSub(totalSupply, _amount);
       Burned(msg.sender, _holder, _amount);
   }
@@ -204,7 +214,7 @@ contract SilentNotaryToken is SafeMath, ERC20, Killable {
       var holder = holders[i];
 
       uint multiplier = 10 ** decimals;
-      uint holderTokenPortion =  safeDiv(safeMul(balances[holder], multiplier), totalSupplyAmount);
+      uint holderTokenPortion =  safeDiv(safeMul(balances[holder].value, multiplier), totalSupplyAmount);
       uint holderWeiPortion  = safeDiv(safeMul(holderTokenPortion, payoutBalance), multiplier);
 
       if(holderWeiPortion < buyOutPrice)
