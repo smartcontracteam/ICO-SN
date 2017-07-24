@@ -1,12 +1,14 @@
-pragma solidity 0.4.11;
+pragma solidity 0.4.13;
+
 /*
-This code is in the testing stage and may contain certain bugs. 
+This code is in the testing stage and may contain certain bugs.
 These bugs will be identified and eliminated by the team at the testing stage before the ICO.
 Please treat with understanding. If you become aware of a problem, please let us know by e-mail: service@silentnotary.com.
-If the problem is critical and security related, we will credit you with the reward from the team's share in the tokens 
+If the problem is critical and security related, we will credit you with the reward from the team's share in the tokens
 at the end of the ICO (as officially announced at bitcointalk.org).
 Thanks for the help.
 */
+
 /// @title MultiSigWallet contract - Silent Notary 2 escrow and 2 team members multisig wallet
 /// @author dev@smartcontracteam.com
 contract MultiSigWallet {
@@ -77,12 +79,11 @@ contract MultiSigWallet {
       _;
     }
 
-    modifier validRequirement(uint ownerCount, uint _required) {
-        require(
-          ownerCount <= MAX_OWNER_COUNT &&
-          _required <= ownerCount &&
-          _required != 0 &&
-          ownerCount != 0);
+    modifier validRequirement(uint _ownerCount, uint _required) {
+        require(_ownerCount <= MAX_OWNER_COUNT);
+        require(_required <= _ownerCount);
+        require(_required != 0);
+        require(_ownerCount != 0);
         _;
     }
 
@@ -102,7 +103,7 @@ contract MultiSigWallet {
     {
         for (uint i=0; i<_owners.length; i++) {
             if (isOwner[_owners[i]] || _owners[i] == 0)
-                throw;
+                revert();
             isOwner[_owners[i]] = true;
         }
         owners = _owners;
@@ -173,7 +174,7 @@ contract MultiSigWallet {
         notExecuted(transactionId)
     {
         if (isConfirmed(transactionId)) {
-            Transaction tx = transactions[transactionId];
+            Transaction storage tx = transactions[transactionId];
             tx.executed = true;
             if (tx.destination.call.value(tx.value)(tx.data))
                 Execution(transactionId);
