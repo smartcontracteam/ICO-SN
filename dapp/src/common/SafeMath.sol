@@ -1,4 +1,4 @@
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.13;
 
  /// @title SafeMath contract - math operations with safety checks
  /// @author dev@smartcontracteam.com
@@ -44,8 +44,6 @@ contract SafeMath {
   }
 
   function assert(bool assertion) internal {
-    if (!assertion) {
-      throw;
-    }
+    require(assertion);  
   }
 }
