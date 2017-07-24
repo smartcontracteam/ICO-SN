@@ -1,4 +1,4 @@
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.13;
 
 import "../ownership/Ownable.sol";
 
@@ -16,3 +16,4 @@ contract Migrations is Ownable {
     upgraded.setCompleted(lastCompletedMigration);
   }
 }
+
