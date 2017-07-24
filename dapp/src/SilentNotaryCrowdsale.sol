@@ -1,22 +1,24 @@
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.13;
 
 import '/src/common/SafeMath.sol';
 import '/src/common/lifecycle/Haltable.sol';
 import '/src/SilentNotaryToken.sol';
 
 /*
-This code is in the testing stage and may contain certain bugs. 
+This code is in the testing stage and may contain certain bugs.
 These bugs will be identified and eliminated by the team at the testing stage before the ICO.
 Please treat with understanding. If you become aware of a problem, please let us know by e-mail: service@silentnotary.com.
-If the problem is critical and security related, we will credit you with the reward from the team's share in the tokens 
+If the problem is critical and security related, we will credit you with the reward from the team's share in the tokens
 at the end of the ICO (as officially announced at bitcointalk.org).
 Thanks for the help.
 */
 
-
-/// @title SilentNotary  сrowdsale contract
+ /// @title SilentNotary  сrowdsale contract
  /// @author dev@smartcontracteam.com
 contract SilentNotaryCrowdsale is Haltable, SafeMath {
+
+  /// The duration of ICO
+  uint public constant ICO_DURATION = 14 days;
 
   //// The token we are selling
   SilentNotaryToken public token;
@@ -26,9 +28,6 @@ contract SilentNotaryCrowdsale is Haltable, SafeMath {
 
   /// The UNIX timestamp start date of the crowdsale
   uint public startsAt;
-
-  ///  the UNIX timestamp end date of the crowdsale
-  uint public endsAt;
 
   /// the number of tokens already sold through this contract
   uint public tokensSold = 0;
@@ -75,8 +74,10 @@ contract SilentNotaryCrowdsale is Haltable, SafeMath {
   /// How much ICO tokens will get team
   uint public constant TEAM_TOKENS = 1e4;
 
-  int priceCalculatingRatio = -1;
+  /// Tokens count involved in price calculation
+  uint public constant TOTAL_TOKENS_FOR_PRICE = INVESTOR_TOKENS + TEAM_TOKENS;
 
+  /// last token price
   uint public tokenPrice = MIN_PRICE;
 
    /// State machine
@@ -110,24 +111,20 @@ contract SilentNotaryCrowdsale is Haltable, SafeMath {
   /// @param _token SNTR token address
   /// @param _multisigWallet  multisig wallet address
   /// @param _start  ICO start time
-  /// @param _end  ICO end time
-  function Crowdsale(address _token, address _multisigWallet, uint _start, uint _end) {
+  function Crowdsale(address _token, address _multisigWallet, uint _start) {
     require(_token != 0);
     require(_multisigWallet != 0);
     require(_start != 0);
-    require(_end != 0);
-    require(_start < _end);
 
     owner = msg.sender;
     token = SilentNotaryToken(_token);
     multisigWallet = _multisigWallet;
     startsAt = _start;
-    endsAt = _end;
   }
 
   /// @dev Don't expect to just send in money and get tokens.
   function() payable {
-    throw;
+    revert();
   }
 
    /// @dev Make an investment.
@@ -137,12 +134,10 @@ contract SilentNotaryCrowdsale is Haltable, SafeMath {
     require(msg.value >= MIN_INVESTEMENT);
 
     uint weiAmount = msg.value;
-    uint tokenAmount = safeDiv(weiAmount, tokenPrice);
-    assert(tokenAmount > 0);
 
-    var price = calculatePrice(tokenAmount);
-    PriceChanged(tokenPrice, price);
-    tokenPrice = price;
+    var multiplier = 10 ** token.decimals();
+    uint tokenAmount = safeDiv(safeMul(weiAmount, multiplier), tokenPrice);
+    assert(tokenAmount > 0);
 
     if(investedAmountOf[receiver] == 0) {
        // A new investor
@@ -155,27 +150,29 @@ contract SilentNotaryCrowdsale is Haltable, SafeMath {
     weiRaised = safeAdd(weiRaised, weiAmount);
     tokensSold = safeAdd(tokensSold, tokenAmount);
 
+    var newPrice = calculatePrice(tokensSold);
+    PriceChanged(tokenPrice, newPrice);
+    tokenPrice = newPrice;
+
     // Check that we did not bust the cap
-    if(isBreakingCap(weiAmount, tokenAmount, weiRaised, tokensSold)) {
-      throw;
-    }
+    //if(isBreakingCap(weiAmount, tokenAmount, weiRaised, tokensSold)) {
+    //  revert();
+    //}
 
     assignTokens(receiver, tokenAmount);
-
-    if(weiRaised <= MULTISIG_WALLET_GOAL) {
-      if(!multisigWallet.send(weiAmount)) throw;
-    }
+    if(weiRaised <= MULTISIG_WALLET_GOAL)
+      multisigWallet.transfer(weiAmount);
     else {
       int remain = int(weiAmount - weiRaised - MULTISIG_WALLET_GOAL);
 
       if(remain > 0) {
-        if(!multisigWallet.send(uint(remain))) throw;
-        weiAmount = weiAmount - uint(remain);
+        multisigWallet.transfer(uint(remain));
+        weiAmount = safeSub(weiAmount, uint(remain));
       }
 
       var distributedAmount = safeDiv(safeMul(weiAmount, 32), 100);
-      if(!owner.send(distributedAmount)) throw;
-      if(!multisigWallet.send(safeSub(weiAmount, distributedAmount))) throw;
+      owner.transfer(distributedAmount);
+      multisigWallet.transfer(safeSub(weiAmount, distributedAmount));
 
     }
     // Tell us invest was success
@@ -195,10 +192,8 @@ contract SilentNotaryCrowdsale is Haltable, SafeMath {
 
   /// @dev Finalize a succcesful crowdsale. The owner can triggre a call the contract that provides post-crowdsale actions, like releasing the tokens.
   function finalize() public inState(State.Success) onlyOwner stopInEmergency {
-    // Already finalized
-    if(finalized) {
-      throw;
-    }
+    // If not already finalized
+    require(!finalized);
 
     finalizeCrowdsale();
     finalized = true;
@@ -206,73 +201,55 @@ contract SilentNotaryCrowdsale is Haltable, SafeMath {
 
   /// @dev Finalize a succcesful crowdsale.
   function finalizeCrowdsale() internal {
-    assignTokens(owner, safeAdd(safeSub(INVESTOR_TOKENS, tokensSold), TEAM_TOKENS));
+    var multiplier = 10 ** token.decimals();
+    assignTokens(owner, safeMul(safeAdd(safeSub(INVESTOR_TOKENS, tokensSold), TEAM_TOKENS), multiplier));
     token.releaseTokenTransfer();
-  }
-
-  /// @dev Allow crowdsale owner to close early or extend the crowdsale.
-  /// @param time crowdsale close time
-  function setEndsAt(uint time) onlyOwner {
-    if(now > time) {
-      throw; // Don't change past
-    }
-
-    endsAt = time;
-    EndsAtChanged(endsAt);
-  }
-
-   /// @dev  Allow to change the team multisig address in the case of emergency.
-   /// @param _multisigWallet crowdsale close time
-  function setMultisig(address _multisigWallet) public onlyOwner {
-    multisigWallet = _multisigWallet;
   }
 
    /// @dev  Allow load refunds back on the contract for the refunding. The team can transfer the funds back on the smart contract in the case the minimum goal was not reached.
   function loadRefund() public payable inState(State.Failure) {
-    if(msg.value == 0) throw;
+    if(msg.value == 0)
+      revert();
     loadedRefund = safeAdd(loadedRefund, msg.value);
   }
 
   /// @dev  Investors can claim refund.
   function refund() public inState(State.Refunding) {
     uint256 weiValue = investedAmountOf[msg.sender];
-    if (weiValue == 0) throw;
+    if (weiValue == 0)
+      revert();
     investedAmountOf[msg.sender] = 0;
     weiRefunded = safeAdd(weiRefunded, weiValue);
     Refund(msg.sender, weiValue);
-    if (!msg.sender.send(weiValue)) throw;
-  }
-
-  /// @dev Minimum goal was reached
-  /// @return true if the crowdsale has raised enough money to be a succes
-  function isMinimumGoalReached() public constant returns (bool reached) {
-    return weiRaised >= FUNDING_GOAL;
+    if (!msg.sender.send(weiValue))
+      revert();
   }
 
    /// @dev Crowdfund state machine management.
    /// @return State current state
   function getState() public constant returns (State) {
-    if(finalized) return State.Finalized;
-    else if (address(token) == 0) return State.Preparing;
-    else if (address(multisigWallet) == 0) return State.Preparing;
-	  else if (block.timestamp < startsAt) return State.Preparing;
-    else if (block.timestamp <= endsAt && !isCrowdsaleFull()) return State.Funding;
-    else if (isMinimumGoalReached()) return State.Success;
-    else if (!isMinimumGoalReached() && weiRaised > 0 && loadedRefund >= weiRaised) return State.Refunding;
-    else return State.Failure;
+    if (finalized)
+      return State.Finalized;
+    if (address(token) == 0 || address(multisigWallet) == 0)
+      return State.Preparing;
+    if (now >= startsAt && now < startsAt + ICO_DURATION && !isCrowdsaleFull())
+      return State.Funding;
+    if (isCrowdsaleFull())
+        return State.Success;
+    if (!isMinimumGoalReached() && weiRaised > 0 && loadedRefund >= weiRaised)
+      return State.Refunding;
+    return State.Failure;
   }
 
   /// @dev Calculating price, it is not linear function
-  /// @param tokenAmount tokens to buy
+  /// @param totalRaisedTokens total raised tokens
   /// @return price in wei
-  function calculatePrice(uint tokenAmount) internal returns (uint price) {
-    if(tokenAmount == 0)
-      throw;
-
-    uint multiplier = 10**token.decimals();
-    priceCalculatingRatio = priceCalculatingRatio * int(multiplier + tokenAmount * multiplier) / int(INVESTOR_TOKENS);
-    price = (uint(priceCalculatingRatio) * (MAX_PRICE - MIN_PRICE)  + MAX_PRICE * multiplier) / multiplier;
-    return price;
+  function calculatePrice(uint totalRaisedTokens) internal returns (uint price) {
+    int multiplier = int(10**token.decimals());
+    int coefficient = int(safeDiv(totalRaisedTokens, TOTAL_TOKENS_FOR_PRICE)) - multiplier;
+    int priceDifference = coefficient * int(MAX_PRICE - MIN_PRICE) / multiplier;
+    assert(int(MAX_PRICE) >= -priceDifference);
+    return uint(priceDifference + int(MAX_PRICE));
   }
 
    /// @dev Called from invest() to confirm if the curret investment does not break our cap rule.
@@ -281,14 +258,22 @@ contract SilentNotaryCrowdsale is Haltable, SafeMath {
    /// @param weiRaisedTotal tokens to buy
    /// @param tokensSoldTotal tokens to buy
    /// @return limit result
-   function isBreakingCap(uint weiAmount, uint tokenAmount, uint weiRaisedTotal, uint tokensSoldTotal) constant returns (bool limitBroken) {
-     return tokensSoldTotal > INVESTOR_TOKENS;
+   //function isBreakingCap(uint weiAmount, uint tokenAmount, uint weiRaisedTotal, uint tokensSoldTotal) constant returns (bool limitBroken) {
+   //   return false;
+   //}
+
+   /// @dev Minimum goal was reached
+   /// @return true if the crowdsale has raised enough money to be a succes
+   function isMinimumGoalReached() public constant returns (bool reached) {
+     return weiRaised >= FUNDING_GOAL;
    }
 
    /// @dev Check crowdsale limit
    /// @return limit reached result
    function isCrowdsaleFull() public constant returns (bool) {
-     return false;
+     return tokenPrice >= MAX_PRICE
+       || tokensSold >= safeMul(TOTAL_TOKENS_FOR_PRICE,  10 ** token.decimals())
+       || now > startsAt + ICO_DURATION;
    }
 
     /// @dev Dynamically create tokens and assign them to the investor.
