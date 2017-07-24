@@ -1,4 +1,4 @@
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.13;
 
  /// @title Ownable contract - base contract with an owner
  /// @author dev@smartcontracteam.com
@@ -10,9 +10,7 @@ contract Ownable {
   }
 
   modifier onlyOwner() {
-    if (msg.sender != owner) {
-      throw;
-    }
+    require(msg.sender == owner);  
     _;
   }
 
