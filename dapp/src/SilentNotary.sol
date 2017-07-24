@@ -47,13 +47,13 @@ contract SilentNotary is Ownable {
 	}
 
 	/// @dev Register file hash in contract, web3 integration
-	/// @param hash SHA-384 file hash
+	/// @param hash SHA-256 file hash
 	function makeRegistration(bytes32 hash) onlyOwner public {
 			makeRegistrationInternal(hash);
 	}
 
 	/// @dev Payable registration in SNTR tokens
-	/// @param hash SHA-384 file hash
+	/// @param hash SHA-256 file hash
 	function makePayableRegistration(bytes32 hash) public {
 			address sender = msg.sender;
 
@@ -66,7 +66,7 @@ contract SilentNotary is Ownable {
 	}
 
 	/// @dev Internal registation method
-	/// @param hash SHA-384 file hash
+	/// @param hash SHA-256 file hash
 	function makeRegistrationInternal(bytes32 hash) internal {
 			uint timestamp = now;
 	    // Checks documents isn't already registered
@@ -81,7 +81,7 @@ contract SilentNotary is Ownable {
 	}
 
 	/// @dev Check hash existance
-	/// @param hash SHA-384 file hash
+	/// @param hash SHA-256 file hash
 	/// @return Returns true if hash exist
 	function exist(bytes32 hash) internal constant returns (bool) {
 	    return entryStorage[hash].blockNumber != 0;
