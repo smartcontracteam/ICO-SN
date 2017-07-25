@@ -124,7 +124,7 @@ contract SilentNotaryCrowdsale is Haltable, SafeMath {
 
   /// @dev Don't expect to just send in money and get tokens.
   function() payable {
-    revert();
+    buy();
   }
 
    /// @dev Make an investment.
@@ -195,8 +195,8 @@ contract SilentNotaryCrowdsale is Haltable, SafeMath {
     // If not already finalized
     require(!finalized);
 
-    finalizeCrowdsale();
     finalized = true;
+    finalizeCrowdsale();
   }
 
   /// @dev Finalize a succcesful crowdsale.
@@ -234,7 +234,7 @@ contract SilentNotaryCrowdsale is Haltable, SafeMath {
       return State.Preparing;
     if (now >= startsAt && now < startsAt + ICO_DURATION && !isCrowdsaleFull())
       return State.Funding;
-    if (isCrowdsaleFull())
+    if (isMinimumGoalReached())
         return State.Success;
     if (!isMinimumGoalReached() && weiRaised > 0 && loadedRefund >= weiRaised)
       return State.Refunding;
