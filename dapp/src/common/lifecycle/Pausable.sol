@@ -3,7 +3,6 @@ pragma solidity ^0.4.13;
 import "../ownership/Ownable.sol";
 
  /// @title Pausable contract - abstract contract that allows children to implement an emergency stop mechanism.
- /// @author dev@smartcontracteam.com
 contract Pausable is Ownable {
   bool public stopped;
 
