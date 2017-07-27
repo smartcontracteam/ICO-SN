@@ -3,7 +3,6 @@ pragma solidity ^0.4.13;
 import "/src/common/ownership/Ownable.sol";
 
 /// @title Haltable contract - abstract contract that allows children to implement an emergency stop mechanism.
-/// @author dev@smartcontracteam.com
 /// Originally envisioned in FirstBlood ICO contract.
 contract Haltable is Ownable {
   bool public halted;
