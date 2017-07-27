@@ -14,7 +14,6 @@ Thanks for the help.
 */
 
  /// @title SilentNotaryToken contract - standard ERC20 token with Short Hand Attack and approve() race condition mitigation.
- /// @author dev@smartcontracteam.com
 contract SilentNotaryToken is SafeMath, ERC20, Killable {
   string constant public name = "Silent Notary Token";
   string constant public symbol = "SNTR";
