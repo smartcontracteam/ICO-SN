@@ -1,7 +1,6 @@
 pragma solidity ^0.4.13;
 
  /// @title SafeMath contract - math operations with safety checks
- /// @author dev@smartcontracteam.com
 contract SafeMath {
   function safeMul(uint a, uint b) internal returns (uint) {
     uint c = a * b;
