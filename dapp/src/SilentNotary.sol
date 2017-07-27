@@ -13,7 +13,6 @@ Thanks for the help.
 */
 
 /// @title SilentNotary contract - store SHA-256 file hash in blockchain
-/// @author dev@smartcontracteam.com
 contract SilentNotary is Ownable {
 	uint public price;
 	address public token;
