@@ -3,6 +3,7 @@ pragma solidity ^0.4.13;
 import '/src/common/SafeMath.sol';
 import '/src/common/lifecycle/Haltable.sol';
 import '/src/SilentNotaryToken.sol';
+import '/src/common/lifecycle/Killable.sol';
 
 /*
 This code is in the testing stage and may contain certain bugs.
@@ -15,7 +16,7 @@ Thanks for the help.
 
  /// @title SilentNotary  сrowdsale contract
  /// @author dev@smartcontracteam.com
-contract SilentNotaryCrowdsale is Haltable, SafeMath {
+contract SilentNotaryCrowdsale is Haltable, Killable, SafeMath {
 
   /// The duration of ICO
   uint public constant ICO_DURATION = 14 days;
@@ -111,12 +112,11 @@ contract SilentNotaryCrowdsale is Haltable, SafeMath {
   /// @param _token SNTR token address
   /// @param _multisigWallet  multisig wallet address
   /// @param _start  ICO start time
-  function Crowdsale(address _token, address _multisigWallet, uint _start) {
+  function SilentNotaryCrowdsale(address _token, address _multisigWallet, uint _start) {
     require(_token != 0);
     require(_multisigWallet != 0);
     require(_start != 0);
 
-    owner = msg.sender;
     token = SilentNotaryToken(_token);
     multisigWallet = _multisigWallet;
     startsAt = _start;
