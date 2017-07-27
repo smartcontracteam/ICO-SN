@@ -10,7 +10,6 @@ Thanks for the help.
 */
 
 /// @title MultiSigWallet contract - Silent Notary 2 escrow and 2 team members multisig wallet
-/// @author dev@smartcontracteam.com
 contract MultiSigWallet {
 
     uint constant public MAX_OWNER_COUNT = 4;
