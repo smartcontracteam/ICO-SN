@@ -15,7 +15,6 @@ Thanks for the help.
 */
 
  /// @title SilentNotary  сrowdsale contract
- /// @author dev@smartcontracteam.com
 contract SilentNotaryCrowdsale is Haltable, Killable, SafeMath {
 
   /// The duration of ICO
