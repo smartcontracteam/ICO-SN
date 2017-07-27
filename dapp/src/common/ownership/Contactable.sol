@@ -3,7 +3,6 @@ pragma solidity ^0.4.13;
 import './Ownable.sol';
 
  /// @title Contactable contract - basic version of a contactable contract
- /// @author dev@smartcontracteam.com
 contract Contactable is Ownable {
      string public contactInformation;
 
