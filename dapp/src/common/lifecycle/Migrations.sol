@@ -3,7 +3,6 @@ pragma solidity ^0.4.13;
 import "../ownership/Ownable.sol";
 
 /// @title Migrations contract - abstract contract that allows migrate to new address.
-/// @author dev@smartcontracteam.com
 contract Migrations is Ownable {
   uint public lastCompletedMigration;
 
